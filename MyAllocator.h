@@ -14,7 +14,7 @@ struct MyAllocator {
 
         std::byte* give(std::size_t bytes) {
             if (used + bytes > buf.size())
-                buf.resize(used + bytes);   // см. оговорку про resize ниже
+                buf.resize(used + bytes);
             std::byte* p = buf.data() + used;
             used += bytes;
             return p;
@@ -26,7 +26,7 @@ struct MyAllocator {
     MyAllocator() : pool(std::make_shared<Pool>()) {}
 
     template <typename U>
-    MyAllocator(const MyAllocator<U>& o) noexcept : pool(o.pool) {} // просто делим пул
+    MyAllocator(const MyAllocator<U>& o) noexcept : pool(o.pool) {}
 
     template <typename U>
     struct rebind { using other = MyAllocator<U>; };
@@ -35,7 +35,7 @@ struct MyAllocator {
         return reinterpret_cast<T*>(pool->give(n * sizeof(T)));
     }
 
-    void deallocate(T*, std::size_t) noexcept {}   // ничего не делаем
+    void deallocate(T*, std::size_t) noexcept {}
 
     void reserve(std::size_t n) { pool->buf.resize(n * sizeof(T)); }
 
