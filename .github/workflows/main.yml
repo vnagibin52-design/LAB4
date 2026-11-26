@@ -49,14 +49,14 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: |
           mkdir ReadyFiles
-          cp build/Release/Container.exe ReadyFiles/
+          cp build/Release/Allocator.exe ReadyFiles/
         shell: powershell
 
       - name: Prepare artifacts (Linux)
         if: matrix.os == 'ubuntu-latest'
         run: |
           mkdir ReadyFiles
-          cp build/Container ReadyFiles/
+          cp build/Allocator ReadyFiles/
         shell: bash
 
       - name: Upload release artifacts (Windows)
