@@ -16,7 +16,6 @@ private:
         Node(T v) : value(v), next(nullptr) {}
     };
 
-    // Переключаем аллокатор с T на Node
     using NodeAlloc =
         typename std::allocator_traits<Allocator>::template rebind_alloc<Node>;
 
