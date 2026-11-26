@@ -1,0 +1,76 @@
+name: CI
+
+on:         
+  push:
+    branches: [ "main" ]  
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+
+        
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup MSVC environment (Windows only)
+        if: matrix.os == 'windows-latest'
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Configure with CMake (Windows)
+        if: matrix.os == 'windows-latest'
+        run: cmake -B build 
+        shell: powershell
+        
+      - name: Configure with CMake (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: cmake -B build
+        shell: bash
+
+      - name: Build with CMake (Windows)
+        if: matrix.os == 'windows-latest'
+        run: cmake --build build --config Release
+        shell: powershell
+
+      - name: Build with CMake (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: cmake --build build --config Release
+        shell: bash
+
+      - name: Prepare artifacts (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          mkdir ReadyFiles
+          cp build/Release/Container.exe ReadyFiles/
+        shell: powershell
+
+      - name: Prepare artifacts (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          mkdir ReadyFiles
+          cp build/Container ReadyFiles/
+        shell: bash
+
+      - name: Upload release artifacts (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-Container-release
+          path: ReadyFiles/ 
+          retention-days: 7
+
+      - name: Upload release artifacts (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-Container-release
+          path: ReadyFiles/
+          retention-days: 7
